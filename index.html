@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eid Surprise with Music</title>
+    <style>
+        :root {
+            --primary: #064e3b; 
+            --accent: #fbbf24;  
+            --paper: #fffef0;
+            --envelope: #1e3a8a;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle, #020617, #0f172a);
+            font-family: 'Palatino', serif;
+            overflow: hidden;
+        }
+
+        /* --- START BUTTON --- */
+        .btn-start {
+            padding: 18px 45px;
+            font-size: 1.3rem;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.4);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        /* --- ENVELOPE --- */
+        #envelope-wrapper {
+            display: none;
+            position: relative;
+            width: 300px;
+            height: 200px;
+            background: var(--envelope);
+            cursor: pointer;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            border-radius: 0 0 10px 10px;
+        }
+
+        #envelope-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            z-index: 5;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 110px solid #2563eb;
+            transform-origin: top;
+            transition: transform 0.6s ease;
+        }
+
+        .open-flap::before { transform: rotateX(180deg); }
+
+        /* --- THE LETTER --- */
+        #letter {
+            position: absolute;
+            bottom: 5px;
+            left: 10px;
+            width: 280px;
+            height: 180px;
+            background: var(--paper);
+            padding: 25px;
+            box-sizing: border-box;
+            border-radius: 5px;
+            text-align: center;
+            transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2;
+        }
+
+        .letter-reveal {
+            transform: translateY(-200px);
+            height: 400px !important;
+            z-index: 6 !important;
+        }
+
+        .content { opacity: 0; transition: opacity 0.8s; color: #333; }
+        .show-content { opacity: 1; }
+
+        /* --- SPARKLES --- */
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .hidden { display: none !important; }
+        
+        #music-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            color: var(--accent);
+            font-size: 0.8rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="eidMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        </audio>
+
+    <button id="start-btn" class="btn-start" onclick="initiate()">Press for Eid Magic ✨</button>
+
+    <div id="envelope-wrapper" onclick="openMagic()">
+        <div id="letter">
+            <div class="content" id="eid-wish">
+                <div style="font-size: 2.5rem;">🌙</div>
+                <h2 style="color:var(--primary)">Eid Mubarak!</h2>
+                <p>May your heart be light, your soul be at peace, and your home be filled with blessings.</p>
+                <p style="font-size: 0.9rem; color: #666;">Wishing you a beautiful Eid-ul-Fitr with your loved ones.</p>
+                <p style="margin-top: 20px; font-weight: bold; color: var(--primary);">— Warmly, Your Name</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="music-indicator">♪ Music Playing...</div>
+
+    <script>
+        const music = document.getElementById('eidMusic');
+
+        function initiate() {
+            document.getElementById('start-btn').classList.add('hidden');
+            document.getElementById('envelope-wrapper').style.display = 'block';
+            document.getElementById('music-indicator').style.display = 'block';
+            
+            // Start the music
+            music.play().catch(e => console.log("Audio play blocked until user interaction"));
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 60; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                document.body.appendChild(confetti);
+
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = 8 + Math.random() * 12;
+                const x = Math.cos(angle) * 200;
+                const y = Math.sin(angle) * 200;
+
+                confetti.style.left = '50%';
+                confetti.style.top = '40%';
+                confetti.style.opacity = '1';
+                confetti.style.background = `hsl(${Math.random() * 40 + 40}, 100%, 50%)`;
+
+                confetti.animate([
+                    { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                    { transform: `translate(${x}px, ${y}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 1500,
+                    easing: 'ease-out'
+                });
+            }
+        }
+
+        function openMagic() {
+            const wrapper = document.getElementById('envelope-wrapper');
+            const letter = document.getElementById('letter');
+            const wish = document.getElementById('eid-wish');
+
+            wrapper.classList.add('open-flap');
+            
+            setTimeout(() => {
+                letter.classList.add('letter-reveal');
+                createConfetti(); 
+                setTimeout(() => {
+                    wish.classList.add('show-content');
+                }, 600);
+            }, 500);
+        }
+    </script>
+</body>
+</html>
