@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eid Surprise with Music</title>
+    <title>Eid Mubarak - A Special Blessing</title>
     <style>
         :root {
-            --primary: #064e3b; 
-            --accent: #fbbf24;  
-            --paper: #fffef0;
-            --envelope: #1e3a8a;
+            --primary: #064e3b; /* Ramadan Green */
+            --accent: #fbbf24;  /* Gold */
+            --paper: #fffef0;  /* Old paper color */
+            --envelope: #1e3a8a; /* Deep blue envelope */
         }
 
         body {
@@ -23,7 +23,7 @@
             overflow: hidden;
         }
 
-        /* --- START BUTTON --- */
+        /* --- STAGE 1: START BUTTON --- */
         .btn-start {
             padding: 18px 45px;
             font-size: 1.3rem;
@@ -38,9 +38,21 @@
             z-index: 10;
         }
 
-        /* --- ENVELOPE --- */
-        #envelope-wrapper {
+        .btn-start:hover { transform: scale(1.05); background: #fff; }
+
+        /* Container to center the envelope *and* the revealed letter */
+        #scene-container {
+            position: relative;
             display: none;
+            width: 300px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- STAGE 2: ENVELOPE --- */
+        #envelope-wrapper {
             position: relative;
             width: 300px;
             height: 200px;
@@ -48,13 +60,16 @@
             cursor: pointer;
             box-shadow: 0 20px 50px rgba(0,0,0,0.8);
             border-radius: 0 0 10px 10px;
+            z-index: 5;
+            transition: opacity 0.5s ease;
         }
 
+        /* The Flap */
         #envelope-wrapper::before {
             content: '';
             position: absolute;
             top: 0;
-            z-index: 5;
+            z-index: 10;
             border-left: 150px solid transparent;
             border-right: 150px solid transparent;
             border-top: 110px solid #2563eb;
@@ -64,32 +79,37 @@
 
         .open-flap::before { transform: rotateX(180deg); }
 
-        /* --- THE LETTER --- */
+        /* --- STAGE 3: THE LETTER --- */
         #letter {
-            position: absolute;
-            bottom: 5px;
-            left: 10px;
-            width: 280px;
-            height: 180px;
+            position: fixed; /* Fixed to keep it in viewport center */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0); /* Start hidden/small */
+            width: 320px; /* Sightly wider */
+            height: 520px; /* Made MUCH taller as requested */
             background: var(--paper);
-            padding: 25px;
+            padding: 40px 25px;
             box-sizing: border-box;
             border-radius: 5px;
             text-align: center;
             transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 2;
+            z-index: 2; /* Initially below envelope */
+            overflow-y: auto; /* Adds scroll if content is somehow too long on small phones */
+            opacity: 0;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
         }
 
-        .letter-reveal {
-            transform: translateY(-200px);
-            height: 400px !important;
-            z-index: 6 !important;
+        /* Special reveal state to bring to center */
+        .letter-revealed {
+            transform: translate(-50%, -50%) scale(1); /* Fully shown in center */
+            z-index: 15 !important; /* Above everything */
+            opacity: 1;
         }
 
         .content { opacity: 0; transition: opacity 0.8s; color: #333; }
         .show-content { opacity: 1; }
 
-        /* --- SPARKLES --- */
+        /* --- CONFETTI SPARKLES --- */
         .confetti {
             position: absolute;
             width: 8px;
@@ -98,76 +118,88 @@
             border-radius: 50%;
             opacity: 0;
             pointer-events: none;
+            z-index: 20;
+        }
+
+        h2 { color: var(--primary); margin: 15px 0 5px 0; }
+        .wish-text {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            text-align: justify;
+            margin-bottom: 20px;
+        }
+
+        .divider {
+            color: var(--accent);
+            margin: 15px 0;
+            font-size: 1.2rem;
         }
 
         .hidden { display: none !important; }
-        
-        #music-indicator {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            color: var(--accent);
-            font-size: 0.8rem;
-            display: none;
-        }
     </style>
 </head>
 <body>
 
-    <audio id="eidMusic" loop>
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-        </audio>
+    <button id="start-btn" class="btn-start" onclick="initiate()">Open Eid Greeting</button>
 
-    <button id="start-btn" class="btn-start" onclick="initiate()">Press for Eid Magic ✨</button>
+    <div id="scene-container" class="hidden">
+        <div id="envelope-wrapper" onclick="openMagic()">
+            </div>
 
-    <div id="envelope-wrapper" onclick="openMagic()">
         <div id="letter">
             <div class="content" id="eid-wish">
                 <div style="font-size: 2.5rem;">🌙</div>
-                <h2 style="color:var(--primary)">Eid Mubarak!</h2>
-                <p>May your heart be light, your soul be at peace, and your home be filled with blessings.</p>
-                <p style="font-size: 0.9rem; color: #666;">Wishing you a beautiful Eid-ul-Fitr with your loved ones.</p>
-                <p style="margin-top: 20px; font-weight: bold; color: var(--primary);">— Warmly, Your Name</p>
+                <h2>Eid Mubarak</h2>
+                
+                <div class="divider">✦✦✦</div>
+
+                <div class="wish-text">
+                    <p>As the blessed month of Ramadan bids us farewell, we honor the journey of discipline, reflection, and devotion we shared.</p>
+                    
+                    <p>May the spiritual growth achieved during those long hours of fasting be a foundation for your path ahead. May the prayers offered and the charity given be accepted.</p>
+                    
+                    <p>On this joyful day of Eid-ul-Fitr, I wish that your life is blessed with peace, your home with happiness, and your heart with content. May this festival bring you closer to your loved ones and fill your days with sweet moments and laughter.</p>
+
+                    <p>As we celebrate, let us remember those in need and share the abundance of our blessings. Wishing you and your entire family a truly blessed and wonderful Eid.</p>
+                </div>
+
+                <div class="divider">✦✦✦</div>
+                
+                <p style="margin-top: 30px; font-weight: bold; color: var(--primary); font-size: 1.1rem;">— [Your Name]</p>
             </div>
         </div>
     </div>
 
-    <div id="music-indicator">♪ Music Playing...</div>
-
     <script>
-        const music = document.getElementById('eidMusic');
-
         function initiate() {
             document.getElementById('start-btn').classList.add('hidden');
-            document.getElementById('envelope-wrapper').style.display = 'block';
-            document.getElementById('music-indicator').style.display = 'block';
-            
-            // Start the music
-            music.play().catch(e => console.log("Audio play blocked until user interaction"));
+            const container = document.getElementById('scene-container');
+            container.classList.remove('hidden');
         }
 
         function createConfetti() {
-            for (let i = 0; i < 60; i++) {
+            for (let i = 0; i < 70; i++) {
                 const confetti = document.createElement('div');
                 confetti.className = 'confetti';
                 document.body.appendChild(confetti);
 
                 const angle = Math.random() * Math.PI * 2;
                 const velocity = 8 + Math.random() * 12;
-                const x = Math.cos(angle) * 200;
-                const y = Math.sin(angle) * 200;
+                const x = Math.cos(angle) * 250;
+                const y = Math.sin(angle) * 250;
 
+                // Position confetti in center where the letter appears
                 confetti.style.left = '50%';
-                confetti.style.top = '40%';
+                confetti.style.top = '50%';
                 confetti.style.opacity = '1';
-                confetti.style.background = `hsl(${Math.random() * 40 + 40}, 100%, 50%)`;
+                confetti.style.background = `hsl(${Math.random() * 50 + 40}, 100%, 50%)`; // Gold/Yellow shades
 
                 confetti.animate([
                     { transform: 'translate(0, 0) scale(1)', opacity: 1 },
                     { transform: `translate(${x}px, ${y}px) scale(0)`, opacity: 0 }
                 ], {
-                    duration: 1500,
-                    easing: 'ease-out'
+                    duration: 1500 + Math.random() * 1000,
+                    easing: 'cubic-bezier(0, .9, .57, 1)'
                 });
             }
         }
@@ -180,13 +212,18 @@
             wrapper.classList.add('open-flap');
             
             setTimeout(() => {
-                letter.classList.add('letter-reveal');
+                // Envelope fades away and the letter takes over the center
+                wrapper.style.opacity = '0';
+                letter.classList.add('letter-revealed');
                 createConfetti(); 
+
                 setTimeout(() => {
                     wish.classList.add('show-content');
-                }, 600);
+                }, 700);
             }, 500);
         }
     </script>
 </body>
-</html>
+    </html>
+
+        
